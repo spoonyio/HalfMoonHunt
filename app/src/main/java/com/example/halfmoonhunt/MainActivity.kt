@@ -43,6 +43,10 @@ class MainActivity : ComponentActivity() {
                     permissionGranted.value = isGranted
                 }
 
+                // Test target location: Ocean Lawn
+                val targetLatitude = 37.4333
+                val targetLongitude = -122.4424
+
                 LaunchedEffect(Unit) {
                     when {
                         ContextCompat.checkSelfPermission(
@@ -93,6 +97,12 @@ class MainActivity : ComponentActivity() {
 
                         location.value?.let {
                             Text(text = "Latitude: ${it.latitude}, Longitude: ${it.longitude}")
+
+                            val current = CalculateDistance(it.latitude, it.longitude)
+                            val target = CalculateDistance(targetLatitude, targetLongitude)
+                            val distanceFt = current.haversine(target)
+
+                            Text(text = "Distance to target: ${"%.1f".format(distanceFt)} feet")
                         } ?: Text(text = "Location not available")
                     }
                 }
