@@ -18,9 +18,11 @@ import com.example.halfmoonhunt.ui.theme.HalfMoonHuntTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 class MainActivity : ComponentActivity() {
 
@@ -133,9 +135,9 @@ class MainActivity : ComponentActivity() {
             val originLat = Math.toRadians(this.lat)
             val destinationLat = Math.toRadians(destination.lat)
 
-            val a = Math.pow(Math.sin(dLat / 2), 2.0) +
-                    Math.pow(Math.sin(dLon / 2), 2.0) * Math.cos(originLat) * Math.cos(destinationLat)
-            val c = 2 * Math.asin(Math.sqrt(a))
+            val a = sin(dLat / 2).pow(2.0) +
+                    sin(dLon / 2).pow(2.0) * cos(originLat) * cos(destinationLat)
+            val c = 2 * asin(sqrt(a))
             return EARTH_RADIUS_FT * c
         }
 
