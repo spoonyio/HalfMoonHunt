@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.example.halfmoonhunt.ui.ClueScreen
 import com.example.halfmoonhunt.ui.PermissionsScreen
 import com.example.halfmoonhunt.ui.StartScreen
 import com.example.halfmoonhunt.ui.theme.HalfMoonHuntTheme
@@ -53,11 +54,25 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("start") {
                                     popUpTo("permissions") { inclusive = true }
                                 }
-                            }
+                            },
+
                         )
                     }
                     composable("start") {
-                        StartScreen()
+                        StartScreen(
+                            onStart = { navController.navigate("clue") }
+                        )
+                    }
+                    composable("clue") {
+                        ClueScreen(
+                            onSolved = {
+                            },
+                            onQuit = {
+                                navController.navigate("start") {
+                                    popUpTo("start") { inclusive = true }
+                                }
+                            }
+                        )
                     }
                 }
             }
