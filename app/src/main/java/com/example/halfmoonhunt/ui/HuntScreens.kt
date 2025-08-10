@@ -7,9 +7,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +43,9 @@ fun PermissionsScreen(onGranted: () -> Unit) {
     }
 
     Scaffold { padding ->
-        Column(Modifier.padding(padding).padding(8.dp)) {
+        Column(Modifier
+            .padding(padding)
+            .padding(8.dp)) {
             Text("To play the game, we need your location to confirm when you've found each clue.")
             Spacer(Modifier.height(8.dp))
             Button(onClick = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) }) {
@@ -58,8 +62,18 @@ fun PermissionsScreen(onGranted: () -> Unit) {
 @Composable
 fun StartScreen() {
     Scaffold { padding ->
-        Column(Modifier.padding(padding).padding(8.dp)) {
-            Text("Start Screen")
+        Column(Modifier
+            .padding(padding)
+            .padding(16.dp)) {
+            Text("Half Moon Hunt", style = MaterialTheme.typography.headlineLarge)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Rules:\n• The goal of the game is to reach the real world locations hinted by the clues as quickly as possible.\n" +
+                        "• The timer starts when you press the “Start game” button.\n" +
+                        "• Each clue is presented on a dedicated Clue page, where you’ll be given a textual clue to a real world location."
+            )
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = { }, modifier = Modifier.fillMaxWidth()) { Text("Start Game") }
         }
     }
 }
