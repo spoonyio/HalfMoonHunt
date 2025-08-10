@@ -19,8 +19,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import kotlin.math.*
 
 @Composable
 fun PermissionsScreen(onGranted: () -> Unit) {
@@ -76,4 +79,37 @@ fun StartScreen() {
             Button(onClick = { }, modifier = Modifier.fillMaxWidth()) { Text("Start Game") }
         }
     }
+}
+
+@Composable
+fun ClueScreen(
+) {
+    val context = LocalContext.current
+    val fused = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+    Scaffold { padding ->
+        Column(Modifier.padding(padding).padding(16.dp)) {
+            Text("Clue", style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(6.dp))
+            Text("Not all giants walk the land... some crash into cliffs.")
+            Spacer(Modifier.height(12.dp))
+        }
+    }
+}
+
+private const val EARTH_RADIUS_FT = 20_925_524.9
+
+fun haversine(
+    lat1: Double, lon1: Double,
+    lat2: Double, lon2: Double
+): Double {
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLon = Math.toRadians(lon2 - lon1)
+    val rLat1 = Math.toRadians(lat1)
+    val rLat2 = Math.toRadians(lat2)
+
+    val a = sin(dLat / 2).pow(2.0) +
+            sin(dLon / 2).pow(2.0) * cos(rLat1) * cos(rLat2)
+    val c = 2 * asin(sqrt(a))
+    return EARTH_RADIUS_FT * c
 }
