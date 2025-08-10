@@ -18,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.example.halfmoonhunt.ui.PermissionsScreen
+import com.example.halfmoonhunt.ui.StartScreen
 import com.example.halfmoonhunt.ui.theme.HalfMoonHuntTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -92,48 +94,4 @@ class MainActivity : ComponentActivity() {
 //        }
 //
 //    }
-}
-
-@Composable
-fun PermissionsScreen(onGranted: () -> Unit) {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val permissionGranted = remember { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        permissionGranted.value = granted
-        if (granted) onGranted()
-    }
-
-    LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(
-                context, Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            onGranted()
-        }
-    }
-
-    Scaffold { padding ->
-        Column(Modifier.padding(padding).padding(8.dp)) {
-            Text("To play the game, we need your location to confirm when you've found each clue.")
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) }) {
-                Text("Allow Access")
-            }
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = { (context as? Activity)?.finish() }) {
-                Text("Exit App")
-            }
-        }
-    }
-}
-
-@Composable
-fun StartScreen() {
-    Scaffold { padding ->
-        Column(Modifier.padding(padding).padding(8.dp)) {
-            Text("Start Screen")
-        }
-    }
 }
