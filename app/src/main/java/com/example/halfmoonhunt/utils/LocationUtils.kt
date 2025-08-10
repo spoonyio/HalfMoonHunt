@@ -10,7 +10,7 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-private const val EARTH_RADIUS_FT = 20_925_524.9
+private const val EARTH_RADIUS_FT = 20903520
 
 fun haversine(
     lat1: Double, lon1: Double,
