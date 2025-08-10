@@ -33,7 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import kotlin.math.*
+import com.example.halfmoonhunt.utils.haversine
+import com.example.halfmoonhunt.utils.locationPermission
 
 @Composable
 fun PermissionsScreen(onGranted: () -> Unit) {
