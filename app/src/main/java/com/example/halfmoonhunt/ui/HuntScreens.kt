@@ -3,7 +3,6 @@ package com.example.halfmoonhunt.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -152,7 +150,7 @@ fun ClueScreen(
                             lastLoc = loc
                             if (loc == null) { distanceMsg = "Location unavailable."; return@addOnSuccessListener }
                             val feet = haversine(loc.latitude, loc.longitude, clue.lat, clue.lon)
-                            distanceMsg = "Last measured distance from target: ${"%.1f".format(feet)} ft"
+                            distanceMsg = "Distance from target: ${"%.1f".format(feet)} ft"
                             if (feet <= clue.threshold) onSolved() else showIncorrect = true
                         }
                         .addOnFailureListener { e -> errorMsg = "Location error: ${e.message}" }
@@ -170,24 +168,29 @@ fun ClueScreen(
                     title = { Text("Hmmm... this isn't it") },
                     text = {
                         Column {
-                            lastLoc?.let { Text("Your location: ${it.latitude}, ${it.longitude}") }
                             distanceMsg?.let { Text(it) }
                             Text("Try again!")
                         }
                     }
                 )
             }
-
-            Spacer(Modifier.height(8.dp))
             TextButton(onClick = onQuit) { Text("Quit") }
         }
     }
 }
 
 @Composable
-fun SolvedClueScreen(solvedClue: SolvedInfo, onContinue: () -> Unit) {
+fun SolvedClueScreen(
+    huntVm: HuntViewModel,
+    solvedClue: SolvedInfo,
+    onContinue: () -> Unit
+) {
+    LaunchedEffect(Unit) { huntVm.pauseTimer() }
+    val elapsed by huntVm.timer.collectAsState()
     Scaffold { padding ->
         Column(Modifier.padding(padding).padding(16.dp)) {
+            Text("Timer: ${elapsed.formatTime()} (paused)", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(8.dp))
             Text(solvedClue.title, style = MaterialTheme.typography.headlineMedium)
             Spacer(Modifier.height(8.dp))
             Text(solvedClue.body)
@@ -202,12 +205,25 @@ fun SolvedClueScreen(solvedClue: SolvedInfo, onContinue: () -> Unit) {
 @Composable
 fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
     val elapsed by huntVm.timer.collectAsState()
+    val solved = remember { huntVm.currentSolved()}
     Scaffold { p ->
         Column(Modifier.padding(p).padding(16.dp)) {
             Text("Treasure Hunt Completed!", style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             Text("Total time: ${elapsed.formatTime()}")
             Spacer(Modifier.height(16.dp))
+
+            solved?.let {
+                Text(it.title, style = MaterialTheme.typography.headlineMedium)
+                Spacer(Modifier.height(8.dp))
+                Text(it.body)
+                Spacer(Modifier.height(8.dp))
+                if (it.facts.isNotEmpty()) {
+                    Text(it.facts)
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+
             Button(onClick = onHome, modifier = Modifier.fillMaxWidth()) { Text("Home") }
         }
     }

@@ -8,7 +8,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.halfmoonhunt.model.SolvedInfo
 import com.example.halfmoonhunt.ui.ClueScreen
 import com.example.halfmoonhunt.ui.CompletedScreen
 import com.example.halfmoonhunt.ui.PermissionsScreen
@@ -84,6 +83,7 @@ class MainActivity : ComponentActivity() {
 
                         if (displayed != null) {
                             SolvedClueScreen(
+                                huntVm = huntVm,
                                 solvedClue = displayed,
                                 onContinue = {
                                     val finished = huntVm.advance()
