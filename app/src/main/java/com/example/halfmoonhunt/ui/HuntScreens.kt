@@ -16,12 +16,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -36,11 +40,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.halfmoonhunt.HuntViewModel
+import com.example.halfmoonhunt.R
 import com.example.halfmoonhunt.model.SolvedInfo
 import com.example.halfmoonhunt.utils.formatTime
 import com.google.android.gms.location.LocationServices
@@ -109,19 +118,70 @@ fun StartScreen(
     rules: List<String>,
     onStart: () -> Unit,
 ) {
-    Scaffold { padding ->
-        Column(Modifier
-            .padding(padding)
-            .padding(16.dp)) {
-            Text("Half Moon Hunt", style = MaterialTheme.typography.headlineLarge)
-            Spacer(Modifier.height(16.dp))
-            Text("Rules", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(4.dp))
-            RulesBox(rules = rules, modifier = Modifier.padding(top = 8.dp))
-            Spacer(Modifier.height(16.dp))
-            Text("Once you’ve read all the rules press the button below to start the game!", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(16.dp))
-            Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) { Text("Start Game") }
+    Scaffold(
+        containerColor = Color(0xFFD9BBA0)
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
+            ) {
+                Column(Modifier.padding(32.dp)) {
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        "Hello there! \uD83C\uDFD6\uFE0F",
+                        style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Text("Welcome to Half Moon Hunt, a mobile treasure hunt that guides users to real world locations in the famous coastal city of Half Moon Bay.")
+                    Spacer(Modifier.height(16.dp))
+                    Text("Rules", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 1.dp
+                    )
+                    RulesBox(rules = rules, modifier = Modifier.padding(top = 8.dp))
+                    Spacer(Modifier.height(12.dp))
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 1.dp
+                    )
+                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        "Once you’ve read all the rules press the button below to start the game!",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = onStart,
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("Start Game") }
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+            Text(
+                text = "half moon hunt",
+                fontFamily = FontFamily(Font(R.font.yellowtail_regular)),
+                fontSize = 36.sp,
+                color = Color.White,
+                modifier = Modifier.offset(y = (8).dp)
+            )
         }
     }
 }
@@ -263,9 +323,12 @@ fun RulesBox(rules: List<String>, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 160.dp)
-            .height(240.dp)
+            .height(320.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
-        Column(Modifier.padding(16.dp).verticalScroll(scroll)) {
+        Column(Modifier.padding(9.dp).verticalScroll(scroll)) {
             rules.forEach { rule ->
                 Row(Modifier.padding(bottom = 6.dp)) {
                     Text("• ")
