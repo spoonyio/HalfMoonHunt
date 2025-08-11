@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.halfmoonhunt.HuntViewModel
+import com.example.halfmoonhunt.utils.formatTime
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.example.halfmoonhunt.utils.haversine
@@ -97,14 +101,22 @@ fun StartScreen(
 @SuppressLint("MissingPermission")
 @Composable
 fun ClueScreen(
+    huntVm: HuntViewModel,
     onSolved: () -> Unit,
     onQuit: () -> Unit
 ) {
     val context = LocalContext.current
     val fused = remember { LocationServices.getFusedLocationProviderClient(context) }
-    val targetLat = 37.501630
-    val targetLon = -122.496700
-    val threshold = 500.0
+
+    val clues by huntVm.clues.collectAsState()
+    val index by huntVm.currentIndex.collectAsState()
+    val elapsed by huntVm.timer.collectAsState()
+
+    val clue = clues.getOrNull(index) ?: run {
+        Scaffold { padding -> Column(Modifier.padding(padding).padding(16.dp)) { Text("Loading clue...") } }
+        return
+    }
+
 
     var showHint by remember { mutableStateOf(false) }
     var lastLoc by remember { mutableStateOf<Location?>(null) }
@@ -114,67 +126,59 @@ fun ClueScreen(
 
     Scaffold { padding ->
         Column(Modifier.padding(padding).padding(16.dp)) {
-            Text("Clue", style = MaterialTheme.typography.titleLarge)
+            Text("Timer: ${elapsed.formatTime()}", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(8.dp))
+
+            Text("Clue ${index + 1} of ${clues.size}", style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
-            Text("Not all giants walk the land... some crash into cliffs.")
+            Text(clue.text)
             Spacer(Modifier.height(12.dp))
-            Row {
-                OutlinedButton(onClick = { showHint = !showHint }) {
-                    Text(if (showHint) "Hide Hint" else "Show Hint")
-                }
-            }
+
+            Row { OutlinedButton(onClick = { showHint = !showHint }) { Text(if (showHint) "Hide Hint" else "Show Hint") } }
 
             if (showHint) {
                 Spacer(Modifier.height(8.dp))
-                Text("Hint: Additional Hint", style = MaterialTheme.typography.bodyMedium)
+                Text("Hint: ${clue.hint}", style = MaterialTheme.typography.bodyMedium)
             }
 
             Spacer(Modifier.height(16.dp))
             Button(
                 onClick = {
-                    if (!locationPermission(context)) {
-                        errorMsg = "Location permission not granted."
-                        return@Button
-                    }
+                    if (!locationPermission(context)) { errorMsg = "Location permission not granted."; return@Button }
                     val cts = com.google.android.gms.tasks.CancellationTokenSource()
                     fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
                         .addOnSuccessListener { loc ->
                             lastLoc = loc
-                            if (loc == null) {
-                                distanceMsg = "Location unavailable. Set a mock location in the emulator."
-                                return@addOnSuccessListener
-                            }
-                            val feet = haversine(loc.latitude, loc.longitude, targetLat, targetLon)
-                            distanceMsg = "Distance to target: ${"%.1f".format(feet)} ft"
-                            if (feet <= threshold) onSolved() else showIncorrect = true
+                            if (loc == null) { distanceMsg = "Location unavailable."; return@addOnSuccessListener }
+                            val feet = haversine(loc.latitude, loc.longitude, clue.lat, clue.lon)
+                            distanceMsg = "Distance: ${"%.1f".format(feet)} ft"
+                            if (feet <= clue.threshold) onSolved() else showIncorrect = true
                         }
-                        .addOnFailureListener { e ->
-                            errorMsg = "Location error: ${e.message}"
-                        }
+                        .addOnFailureListener { e -> errorMsg = "Location error: ${e.message}" }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Found It!") }
+
+            Spacer(Modifier.height(12.dp))
+            distanceMsg?.let { Text(it) }
+            errorMsg?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+
             if (showIncorrect) {
-                androidx.compose.material3.AlertDialog(
+                AlertDialog(
                     onDismissRequest = { showIncorrect = false },
                     confirmButton = { TextButton(onClick = { showIncorrect = false }) { Text("OK") } },
-                    title = { Text("Hmmm... this isn't it,") },
+                    title = { Text("Hmmm... this isn't it") },
                     text = {
                         Column {
-                            lastLoc?.let {
-                                Text("Your location: ${it.latitude}, ${it.longitude}")
-                            }
-                            distanceMsg?.let {
-                                Text(it)
-                            }
+                            lastLoc?.let { Text("Your location: ${it.latitude}, ${it.longitude}") }
+                            distanceMsg?.let { Text(it) }
                             Text("Trust your inner compass and try again!")
                         }
                     }
                 )
-            } else
-            Spacer(Modifier.height(12.dp))
-            errorMsg?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-            Spacer(Modifier.width(8.dp))
+            }
+
+            Spacer(Modifier.height(8.dp))
             TextButton(onClick = onQuit) { Text("Quit") }
         }
     }
