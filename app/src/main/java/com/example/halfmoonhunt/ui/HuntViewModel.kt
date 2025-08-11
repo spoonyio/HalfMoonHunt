@@ -3,6 +3,7 @@ package com.example.halfmoonhunt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.halfmoonhunt.model.Clue
+import com.example.halfmoonhunt.model.SolvedInfo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class HuntViewModel : ViewModel() {
+
 
     private val _timer = MutableStateFlow(0L)
     val timer = _timer.asStateFlow()
@@ -60,7 +62,7 @@ class HuntViewModel : ViewModel() {
                 hint = "It's called Francis, but don’t expect a sermon... this beachside stage speaks in wind and waves.",
                 lat = 37.470194,
                 lon = -122.446411,
-                threshold = 200.0
+                threshold = 500.0
             )
         )
         _currentIndex.value = 0
@@ -81,5 +83,7 @@ class HuntViewModel : ViewModel() {
         }
         return true
     }
+
+
 
 }
