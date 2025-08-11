@@ -289,23 +289,39 @@ fun ClueScreen(
 fun SolvedClueScreen(
     huntVm: HuntViewModel,
     solvedClue: SolvedInfo,
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    onQuit: () -> Unit
 ) {
     LaunchedEffect(Unit) { huntVm.pauseTimer() }
     val elapsed by huntVm.timer.collectAsState()
     Scaffold { padding ->
         Column(Modifier
             .padding(padding)
-            .padding(16.dp)) {
-            Text(stringResource(R.string.timer_colon, elapsed.formatTime()), style = MaterialTheme.typography.titleMedium)
+            .padding(24.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(stringResource(R.string.timer_colon, elapsed.formatTime()), style = MaterialTheme.typography.titleLarge)
+            }
             Spacer(Modifier.height(8.dp))
-            Text(solvedClue.title, style = MaterialTheme.typography.headlineMedium)
+            Text(solvedClue.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(8.dp))
-            Text(solvedClue.body)
+            Text(solvedClue.body, style = MaterialTheme.typography.headlineLarge)
             Spacer(Modifier.height(8.dp))
             Text(solvedClue.facts)
             Spacer(Modifier.height(16.dp))
-            Button(onClick = onContinue) { Text(stringResource(R.string.next_clue)) }
+            Button(
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.next_clue)) }
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                TextButton(onClick = onQuit) {
+                    Text(stringResource(R.string.quit))
+                }
+            }
         }
     }
 }
@@ -317,14 +333,28 @@ fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
     Scaffold { p ->
         Column(Modifier
             .padding(p)
-            .padding(16.dp)) {
-            Text(stringResource(R.string.treasure_hunt_completed), style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.total_time, elapsed.formatTime()))
+            .padding(24.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    Text(stringResource(R.string.emoji_medal), fontSize = 128.sp)
+                    Spacer(Modifier.height(6.dp))
+                    Text(stringResource(R.string.congratulations), style = MaterialTheme.typography.headlineLarge)
+                    Spacer(Modifier.height(6.dp))
+                    Text(stringResource(R.string.total_time, elapsed.formatTime()), style = MaterialTheme.typography.titleLarge)
+                }
+            }
             Spacer(Modifier.height(16.dp))
 
             solved?.let {
-                Text(it.title, style = MaterialTheme.typography.headlineMedium)
+                Text(it.title, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(8.dp))
                 Text(it.body)
                 Spacer(Modifier.height(8.dp))
@@ -334,6 +364,13 @@ fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
                 }
             }
 
+            Text(
+                stringResource(R.string.end_game_button_caption),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(16.dp))
             Button(onClick = onHome, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.home)) }
         }
     }
