@@ -101,6 +101,12 @@ class MainActivity : ComponentActivity() {
                                             popUpTo("clue") { inclusive = true }
                                         }
                                     }
+                                },
+                                onQuit = {
+                                    huntVm.stopTimer()
+                                    navController.navigate("start") {
+                                        popUpTo("start") { inclusive = true }
+                                    }
                                 }
                             )
                         } else {
