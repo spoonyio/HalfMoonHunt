@@ -152,7 +152,7 @@ fun ClueScreen(
                             lastLoc = loc
                             if (loc == null) { distanceMsg = "Location unavailable."; return@addOnSuccessListener }
                             val feet = haversine(loc.latitude, loc.longitude, clue.lat, clue.lon)
-                            distanceMsg = "Distance: ${"%.1f".format(feet)} ft"
+                            distanceMsg = "Last measured distance from target: ${"%.1f".format(feet)} ft"
                             if (feet <= clue.threshold) onSolved() else showIncorrect = true
                         }
                         .addOnFailureListener { e -> errorMsg = "Location error: ${e.message}" }
@@ -173,7 +173,7 @@ fun ClueScreen(
                         Column {
                             lastLoc?.let { Text("Your location: ${it.latitude}, ${it.longitude}") }
                             distanceMsg?.let { Text(it) }
-                            Text("Trust your inner compass and try again!")
+                            Text("Try again!")
                         }
                     }
                 )
@@ -192,11 +192,22 @@ fun SolvedClueScreen(solvedClue: SolvedInfo, onContinue: () -> Unit) {
         Spacer(Modifier.height(8.dp))
         Text(solvedClue.body)
         Spacer(Modifier.height(8.dp))
-        solvedClue.facts.forEach {
-            Text("• $it")
-        }
+        Text(solvedClue.facts)
         Spacer(Modifier.height(16.dp))
         Button(onClick = onContinue) { Text("Next Clue") }
     }
 }
 
+@Composable
+fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
+    val elapsed by huntVm.timer.collectAsState()
+    Scaffold { p ->
+        Column(Modifier.padding(p).padding(16.dp)) {
+            Text("Treasure Hunt Completed!", style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(6.dp))
+            Text("Total time: ${elapsed.formatTime()}")
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = onHome, modifier = Modifier.fillMaxWidth()) { Text("Home") }
+        }
+    }
+}
