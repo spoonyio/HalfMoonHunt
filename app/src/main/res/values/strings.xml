@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Half Moon Hunt</string>
+    <string name="share_your_location">Share your location</string>
+    <string name="location_permission_body_text">To play the game, we need your location to confirm when you\'ve found each clue.</string>
+    <string name="allow_access">Allow Access</string>
+    <string name="exit_app">Exit App</string>
 </resources>

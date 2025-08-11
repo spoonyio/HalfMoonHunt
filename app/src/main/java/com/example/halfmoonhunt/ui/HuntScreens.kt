@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -87,10 +88,10 @@ fun PermissionsScreen(onGranted: () -> Unit) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Share your location", style = MaterialTheme.typography.headlineLarge)
+                Text(stringResource(R.string.share_your_location), style = MaterialTheme.typography.headlineLarge)
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    "To play the game, we need your location to confirm when you've found each clue.",
+                    stringResource(R.string.location_permission_body_text),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,10 +104,10 @@ fun PermissionsScreen(onGranted: () -> Unit) {
                         .fillMaxWidth()
                         .padding(horizontal = 48.dp)
                     ) {
-                    Text("Allow Access")
+                    Text(stringResource(R.string.allow_access))
                 }
                 TextButton(onClick = { (context as? Activity)?.finish() }) {
-                    Text("Exit App")
+                    Text(stringResource(R.string.exit_app))
                 }
             }
         }
@@ -201,7 +202,9 @@ fun ClueScreen(
     val elapsed by huntVm.timer.collectAsState()
 
     val clue = clues.getOrNull(index) ?: run {
-        Scaffold { padding -> Column(Modifier.padding(padding).padding(16.dp)) { Text("Loading clue...") } }
+        Scaffold { padding -> Column(Modifier
+            .padding(padding)
+            .padding(16.dp)) { Text("Loading clue...") } }
         return
     }
 
@@ -212,7 +215,9 @@ fun ClueScreen(
     var errorMsg by remember { mutableStateOf<String?>(null) }
 
     Scaffold { padding ->
-        Column(Modifier.padding(padding).padding(16.dp)) {
+        Column(Modifier
+            .padding(padding)
+            .padding(16.dp)) {
             Text("Timer: ${elapsed.formatTime()}", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
 
@@ -275,7 +280,9 @@ fun SolvedClueScreen(
     LaunchedEffect(Unit) { huntVm.pauseTimer() }
     val elapsed by huntVm.timer.collectAsState()
     Scaffold { padding ->
-        Column(Modifier.padding(padding).padding(16.dp)) {
+        Column(Modifier
+            .padding(padding)
+            .padding(16.dp)) {
             Text("Timer: ${elapsed.formatTime()} (paused)", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             Text(solvedClue.title, style = MaterialTheme.typography.headlineMedium)
@@ -294,7 +301,9 @@ fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
     val elapsed by huntVm.timer.collectAsState()
     val solved = remember { huntVm.currentSolved()}
     Scaffold { p ->
-        Column(Modifier.padding(p).padding(16.dp)) {
+        Column(Modifier
+            .padding(p)
+            .padding(16.dp)) {
             Text("Treasure Hunt Completed!", style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             Text("Total time: ${elapsed.formatTime()}")
@@ -328,7 +337,9 @@ fun RulesBox(rules: List<String>, modifier: Modifier = Modifier) {
             containerColor = Color.White
         )
     ) {
-        Column(Modifier.padding(9.dp).verticalScroll(scroll)) {
+        Column(Modifier
+            .padding(9.dp)
+            .verticalScroll(scroll)) {
             rules.forEach { rule ->
                 Row(Modifier.padding(bottom = 6.dp)) {
                     Text("• ")
