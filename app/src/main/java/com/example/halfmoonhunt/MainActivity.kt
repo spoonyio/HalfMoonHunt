@@ -72,16 +72,10 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("solved") {
-                        val clue = remember {
-                            SolvedInfo(
-                                title = "Testn",
-                                body = "You solved the clue!",
-                                facts = "iejwodijwefoij"
-                            )
-                        }
-                        if (clue != null) {
+                        val info = huntVm.currentSolved()
+                        if (info != null) {
                             SolvedClueScreen(
-                                solvedClue = clue,
+                                solvedClue = info,
                                 onContinue = {
                                     val finished = huntVm.advance()
                                     if (finished) {
