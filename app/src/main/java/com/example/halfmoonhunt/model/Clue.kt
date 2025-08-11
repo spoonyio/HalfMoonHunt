@@ -19,7 +19,7 @@ data class SolvedInfo(
     val facts: String
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class GameData(
     val rules: List<String>,
     val clues: List<Clue>
