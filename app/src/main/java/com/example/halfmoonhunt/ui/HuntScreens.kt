@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.halfmoonhunt.HuntViewModel
+import com.example.halfmoonhunt.model.SolvedInfo
 import com.example.halfmoonhunt.utils.formatTime
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -181,6 +182,21 @@ fun ClueScreen(
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onQuit) { Text("Quit") }
         }
+    }
+}
+
+@Composable
+fun SolvedClueScreen(solvedClue: SolvedInfo, onContinue: () -> Unit) {
+    Column(Modifier.padding(16.dp)) {
+        Text(solvedClue.title, style = MaterialTheme.typography.headlineMedium)
+        Spacer(Modifier.height(8.dp))
+        Text(solvedClue.body)
+        Spacer(Modifier.height(8.dp))
+        solvedClue.facts.forEach {
+            Text("• $it")
+        }
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onContinue) { Text("Next Clue") }
     }
 }
 
