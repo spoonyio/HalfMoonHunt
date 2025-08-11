@@ -3,6 +3,8 @@ package com.example.halfmoonhunt
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     composable("permissions") {
                         PermissionsScreen(
                             onGranted = {
-                                huntVm.loadClues()
+                                huntVm.loadGameData()
                                 navController.navigate("start") {
                                     popUpTo("permissions") { inclusive = true }
                                 }
@@ -47,7 +49,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("start") {
+                        val rules by huntVm.rules.collectAsState()
                         StartScreen(
+                            rules = rules,
                             onStart = {
                                 huntVm.resetHunt()
                                 huntVm.startTimer()

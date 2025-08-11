@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.halfmoonhunt.model.Clue
+import com.example.halfmoonhunt.model.GameData
 import com.example.halfmoonhunt.model.SolvedInfo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -50,13 +51,19 @@ class HuntViewModel(app: Application) : AndroidViewModel(app) {
     private val _currentIndex = MutableStateFlow(0)
     val currentIndex = _currentIndex.asStateFlow()
 
-    fun loadClues() {
+    private val _rules = MutableStateFlow<List<String>>(emptyList())
+    val rules = _rules.asStateFlow()
+
+    fun loadGameData() {
         val raw = getApplication<Application>()
             .resources
-            .openRawResource(R.raw.clues)
+            .openRawResource(R.raw.game_data)
             .bufferedReader()
             .use { it.readText() }
-        _clues.value = json.decodeFromString(raw)
+
+        val data = json.decodeFromString<GameData>(raw)
+        _rules.value = data.rules
+        _clues.value = data.clues
         _currentIndex.value = 0
     }
 

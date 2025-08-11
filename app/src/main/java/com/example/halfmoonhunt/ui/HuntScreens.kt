@@ -7,14 +7,21 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -27,8 +34,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.halfmoonhunt.HuntViewModel
@@ -41,7 +50,7 @@ import com.example.halfmoonhunt.utils.locationPermission
 
 @Composable
 fun PermissionsScreen(onGranted: () -> Unit) {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     val permissionGranted = remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -59,18 +68,37 @@ fun PermissionsScreen(onGranted: () -> Unit) {
         }
     }
 
-    Scaffold { padding ->
-        Column(Modifier
-            .padding(padding)
-            .padding(8.dp)) {
-            Text("To play the game, we need your location to confirm when you've found each clue.")
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) }) {
-                Text("Allow Access")
-            }
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = { (context as? Activity)?.finish() }) {
-                Text("Exit App")
+    Scaffold { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Share your location", style = MaterialTheme.typography.headlineLarge)
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    "To play the game, we need your location to confirm when you've found each clue.",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 40.dp)
+                )
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 48.dp)
+                    ) {
+                    Text("Allow Access")
+                }
+                TextButton(onClick = { (context as? Activity)?.finish() }) {
+                    Text("Exit App")
+                }
             }
         }
     }
@@ -78,6 +106,7 @@ fun PermissionsScreen(onGranted: () -> Unit) {
 
 @Composable
 fun StartScreen(
+    rules: List<String>,
     onStart: () -> Unit,
 ) {
     Scaffold { padding ->
@@ -85,12 +114,12 @@ fun StartScreen(
             .padding(padding)
             .padding(16.dp)) {
             Text("Half Moon Hunt", style = MaterialTheme.typography.headlineLarge)
-            Spacer(Modifier.height(8.dp))
-            Text(
-                "Rules:\n• The goal of the game is to reach the real world locations hinted by the clues as quickly as possible.\n" +
-                        "• The timer starts when you press the “Start game” button.\n" +
-                        "• Each clue is presented on a dedicated Clue page, where you’ll be given a textual clue to a real world location."
-            )
+            Spacer(Modifier.height(16.dp))
+            Text("Rules", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            RulesBox(rules = rules, modifier = Modifier.padding(top = 8.dp))
+            Spacer(Modifier.height(16.dp))
+            Text("Once you’ve read all the rules press the button below to start the game!", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(16.dp))
             Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) { Text("Start Game") }
         }
@@ -118,7 +147,6 @@ fun ClueScreen(
 
 
     var showHint by remember { mutableStateOf(false) }
-    var lastLoc by remember { mutableStateOf<Location?>(null) }
     var distanceMsg by remember { mutableStateOf<String?>(null) }
     var showIncorrect by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
@@ -147,7 +175,6 @@ fun ClueScreen(
                     val cts = com.google.android.gms.tasks.CancellationTokenSource()
                     fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
                         .addOnSuccessListener { loc ->
-                            lastLoc = loc
                             if (loc == null) { distanceMsg = "Location unavailable."; return@addOnSuccessListener }
                             val feet = haversine(loc.latitude, loc.longitude, clue.lat, clue.lon)
                             distanceMsg = "Distance from target: ${"%.1f".format(feet)} ft"
@@ -225,6 +252,26 @@ fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
             }
 
             Button(onClick = onHome, modifier = Modifier.fillMaxWidth()) { Text("Home") }
+        }
+    }
+}
+
+@Composable
+fun RulesBox(rules: List<String>, modifier: Modifier = Modifier) {
+    val scroll = rememberScrollState()
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 160.dp)
+            .height(240.dp)
+    ) {
+        Column(Modifier.padding(16.dp).verticalScroll(scroll)) {
+            rules.forEach { rule ->
+                Row(Modifier.padding(bottom = 6.dp)) {
+                    Text("• ")
+                    Text(rule)
+                }
+            }
         }
     }
 }
