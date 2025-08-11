@@ -204,8 +204,15 @@ fun ClueScreen(
     Scaffold { padding ->
         Column(Modifier
             .padding(padding)
-            .padding(16.dp)) {
-            Text(stringResource(R.string.timer_colon, elapsed.formatTime()), style = MaterialTheme.typography.titleMedium)
+            .padding(24.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(stringResource(R.string.timer_colon, elapsed.formatTime()), style = MaterialTheme.typography.titleLarge)
+            }
             Spacer(Modifier.height(8.dp))
 
             Text(
@@ -213,7 +220,7 @@ fun ClueScreen(
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(Modifier.height(6.dp))
-            Text(clue.text)
+            Text(clue.text,  style = MaterialTheme.typography.headlineLarge)
             Spacer(Modifier.height(12.dp))
 
             Row { OutlinedButton(onClick = {
@@ -252,7 +259,6 @@ fun ClueScreen(
                 modifier = Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.found_it)) }
 
-            Spacer(Modifier.height(12.dp))
             errorMsg?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
             if (showIncorrect) {
@@ -270,7 +276,11 @@ fun ClueScreen(
                     }
                 )
             }
-            TextButton(onClick = onQuit) { Text(stringResource(R.string.quit)) }
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                TextButton(onClick = onQuit) {
+                    Text(stringResource(R.string.quit))
+                }
+            }
         }
     }
 }
