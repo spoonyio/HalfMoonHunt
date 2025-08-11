@@ -8,7 +8,7 @@ data class Clue(
     val threshold: Double
 )
 
-data class SolvedClue(
+data class SolvedInfo(
     val title: String,
     val body: String,
     val facts: String
