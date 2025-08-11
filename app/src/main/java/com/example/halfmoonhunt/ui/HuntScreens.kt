@@ -147,18 +147,7 @@ fun StartScreen(
                     Spacer(Modifier.height(16.dp))
                     Text(stringResource(R.string.welcome_body_text))
                     Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.rules), style = MaterialTheme.typography.titleMedium)
-                    Spacer(Modifier.height(8.dp))
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                        thickness = 1.dp
-                    )
                     RulesBox(rules = rules, modifier = Modifier.padding(top = 8.dp))
-                    Spacer(Modifier.height(12.dp))
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                        thickness = 1.dp
-                    )
                     Spacer(Modifier.height(24.dp))
                     Text(
                         stringResource(R.string.start_game_button_caption),
@@ -343,6 +332,12 @@ fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
 @Composable
 fun RulesBox(rules: List<String>, modifier: Modifier = Modifier) {
     val scroll = rememberScrollState()
+    Text(stringResource(R.string.rules), style = MaterialTheme.typography.titleMedium)
+    Spacer(Modifier.height(8.dp))
+    HorizontalDivider(
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+        thickness = 1.dp
+    )
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -363,4 +358,9 @@ fun RulesBox(rules: List<String>, modifier: Modifier = Modifier) {
             }
         }
     }
+    Spacer(Modifier.height(12.dp))
+    HorizontalDivider(
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+        thickness = 1.dp
+    )
 }
