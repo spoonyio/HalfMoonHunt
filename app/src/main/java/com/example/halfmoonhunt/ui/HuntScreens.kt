@@ -23,7 +23,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -141,14 +140,14 @@ fun StartScreen(
                 Column(Modifier.padding(32.dp)) {
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        "Hello there! \uD83C\uDFD6\uFE0F",
+                        stringResource(R.string.welcome_header),
                         style = MaterialTheme.typography.headlineLarge,
                         textAlign = TextAlign.Center
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text("Welcome to Half Moon Hunt, a mobile treasure hunt that guides users to real world locations in the famous coastal city of Half Moon Bay.")
+                    Text(stringResource(R.string.welcome_body_text))
                     Spacer(Modifier.height(16.dp))
-                    Text("Rules", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.rules), style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
                     HorizontalDivider(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
@@ -162,7 +161,7 @@ fun StartScreen(
                     )
                     Spacer(Modifier.height(24.dp))
                     Text(
-                        "Once you’ve read all the rules press the button below to start the game!",
+                        stringResource(R.string.start_game_button_caption),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         textAlign = TextAlign.Center
@@ -171,12 +170,12 @@ fun StartScreen(
                     Button(
                         onClick = onStart,
                         modifier = Modifier.fillMaxWidth()
-                    ) { Text("Start Game") }
+                    ) { Text(stringResource(R.string.start_game)) }
                     Spacer(Modifier.height(16.dp))
                 }
             }
             Text(
-                text = "half moon hunt",
+                text = stringResource(R.string.half_moon_hunt),
                 fontFamily = FontFamily(Font(R.font.yellowtail_regular)),
                 fontSize = 36.sp,
                 color = Color.White,
@@ -203,7 +202,7 @@ fun ClueScreen(
     val clue = clues.getOrNull(index) ?: run {
         Scaffold { padding -> Column(Modifier
             .padding(padding)
-            .padding(16.dp)) { Text("Loading clue...") } }
+            .padding(16.dp)) { Text(stringResource(R.string.loading_clue)) } }
         return
     }
 
@@ -217,37 +216,52 @@ fun ClueScreen(
         Column(Modifier
             .padding(padding)
             .padding(16.dp)) {
-            Text("Timer: ${elapsed.formatTime()}", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.timer_colon, elapsed.formatTime()), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
 
-            Text("Clue ${index + 1} of ${clues.size}", style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = context.getString(R.string.clue_progress, index + 1, clues.size),
+                style = MaterialTheme.typography.titleLarge
+            )
             Spacer(Modifier.height(6.dp))
             Text(clue.text)
             Spacer(Modifier.height(12.dp))
 
-            Row { OutlinedButton(onClick = { showHint = !showHint }) { Text(if (showHint) "Hide Hint" else "Show Hint") } }
+            Row { OutlinedButton(onClick = {
+                showHint = !showHint }) {
+                    Text(if (showHint) stringResource(R.string.hide_hint)
+                        else stringResource(R.string.show_hint)
+                    )
+                }
+            }
 
             if (showHint) {
                 Spacer(Modifier.height(8.dp))
-                Text("Hint: ${clue.hint}", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.hint_colon, clue.hint), style = MaterialTheme.typography.bodyMedium)
             }
 
             Spacer(Modifier.height(16.dp))
             Button(
                 onClick = {
-                    if (!locationPermission(context)) { errorMsg = "Location permission not granted."; return@Button }
+                    if (!locationPermission(context)) { errorMsg =
+                        context.getString(R.string.location_permission_not_granted); return@Button }
                     val cts = com.google.android.gms.tasks.CancellationTokenSource()
                     fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
                         .addOnSuccessListener { loc ->
-                            if (loc == null) { distanceMsg = "Location unavailable."; return@addOnSuccessListener }
+                            if (loc == null) { distanceMsg =
+                                context.getString(R.string.location_unavailable); return@addOnSuccessListener }
                             val feet = haversine(loc.latitude, loc.longitude, clue.lat, clue.lon)
-                            distanceMsg = "Distance from target: ${"%.1f".format(feet)} ft"
+                            distanceMsg = context.getString(
+                                R.string.distance_from_target_ft,
+                                "%.1f".format(feet)
+                            )
                             if (feet <= clue.threshold) onSolved() else showIncorrect = true
                         }
-                        .addOnFailureListener { e -> errorMsg = "Location error: ${e.message}" }
+                        .addOnFailureListener { e -> errorMsg =
+                            context.getString(R.string.location_error, e.message) }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Found It!") }
+            ) { Text(stringResource(R.string.found_it)) }
 
             Spacer(Modifier.height(12.dp))
             errorMsg?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -255,17 +269,19 @@ fun ClueScreen(
             if (showIncorrect) {
                 AlertDialog(
                     onDismissRequest = { showIncorrect = false },
-                    confirmButton = { TextButton(onClick = { showIncorrect = false }) { Text("OK") } },
-                    title = { Text("Hmmm... this isn't it") },
+                    confirmButton = { TextButton(onClick = { showIncorrect = false }) { Text(
+                        stringResource(R.string.ok)
+                    ) } },
+                    title = { Text(stringResource(R.string.hmmm_this_isn_t_it)) },
                     text = {
                         Column {
                             distanceMsg?.let { Text(it) }
-                            Text("Try again!")
+                            Text(stringResource(R.string.try_again))
                         }
                     }
                 )
             }
-            TextButton(onClick = onQuit) { Text("Quit") }
+            TextButton(onClick = onQuit) { Text(stringResource(R.string.quit)) }
         }
     }
 }
@@ -282,7 +298,7 @@ fun SolvedClueScreen(
         Column(Modifier
             .padding(padding)
             .padding(16.dp)) {
-            Text("Timer: ${elapsed.formatTime()} (paused)", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.timer_colon, elapsed.formatTime()), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             Text(solvedClue.title, style = MaterialTheme.typography.headlineMedium)
             Spacer(Modifier.height(8.dp))
@@ -290,7 +306,7 @@ fun SolvedClueScreen(
             Spacer(Modifier.height(8.dp))
             Text(solvedClue.facts)
             Spacer(Modifier.height(16.dp))
-            Button(onClick = onContinue) { Text("Next Clue") }
+            Button(onClick = onContinue) { Text(stringResource(R.string.next_clue)) }
         }
     }
 }
@@ -303,9 +319,9 @@ fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
         Column(Modifier
             .padding(p)
             .padding(16.dp)) {
-            Text("Treasure Hunt Completed!", style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.treasure_hunt_completed), style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
-            Text("Total time: ${elapsed.formatTime()}")
+            Text(stringResource(R.string.total_time, elapsed.formatTime()))
             Spacer(Modifier.height(16.dp))
 
             solved?.let {
@@ -319,7 +335,7 @@ fun CompletedScreen(huntVm: HuntViewModel, onHome: () -> Unit) {
                 }
             }
 
-            Button(onClick = onHome, modifier = Modifier.fillMaxWidth()) { Text("Home") }
+            Button(onClick = onHome, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.home)) }
         }
     }
 }
@@ -341,7 +357,7 @@ fun RulesBox(rules: List<String>, modifier: Modifier = Modifier) {
             .verticalScroll(scroll)) {
             rules.forEach { rule ->
                 Row(Modifier.padding(bottom = 6.dp)) {
-                    Text("• ")
+                    Text(stringResource(R.string.bullet))
                     Text(rule)
                 }
             }
