@@ -161,7 +161,6 @@ fun ClueScreen(
             ) { Text("Found It!") }
 
             Spacer(Modifier.height(12.dp))
-            distanceMsg?.let { Text(it) }
             errorMsg?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
             if (showIncorrect) {
@@ -187,14 +186,16 @@ fun ClueScreen(
 
 @Composable
 fun SolvedClueScreen(solvedClue: SolvedInfo, onContinue: () -> Unit) {
-    Column(Modifier.padding(16.dp)) {
-        Text(solvedClue.title, style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(8.dp))
-        Text(solvedClue.body)
-        Spacer(Modifier.height(8.dp))
-        Text(solvedClue.facts)
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = onContinue) { Text("Next Clue") }
+    Scaffold { padding ->
+        Column(Modifier.padding(padding).padding(16.dp)) {
+            Text(solvedClue.title, style = MaterialTheme.typography.headlineMedium)
+            Spacer(Modifier.height(8.dp))
+            Text(solvedClue.body)
+            Spacer(Modifier.height(8.dp))
+            Text(solvedClue.facts)
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = onContinue) { Text("Next Clue") }
+        }
     }
 }
 

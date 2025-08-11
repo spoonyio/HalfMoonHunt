@@ -61,7 +61,14 @@ class MainActivity : ComponentActivity() {
                             huntVm = huntVm,
                             onSolved = {
                                 huntVm.pauseTimer()
-                                navController.navigate("solved")
+                                if (huntVm.isLastClue()) {
+                                    navController.navigate("completed") {
+                                        popUpTo("clue") { inclusive = true }
+                                        launchSingleTop = true
+                                    }
+                                } else {
+                                    navController.navigate("solved")
+                                }
                             },
                             onQuit = {
                                 huntVm.stopTimer()
