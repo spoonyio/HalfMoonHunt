@@ -67,8 +67,6 @@ class HuntViewModel(app: Application) : AndroidViewModel(app) {
 
     fun isLastClue(): Boolean = _currentIndex.value >= (_clues.value.size - 1)
 
-
-
     fun advance(): Boolean {
         val last = isLastClue()
         if (!last) {

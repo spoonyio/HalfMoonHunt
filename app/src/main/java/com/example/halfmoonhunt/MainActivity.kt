@@ -79,10 +79,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("solved") {
-                        val info = huntVm.currentSolved()
-                        if (info != null) {
+                        val current = huntVm.currentSolved()
+                        val displayed = remember { current }
+
+                        if (displayed != null) {
                             SolvedClueScreen(
-                                solvedClue = info,
+                                solvedClue = displayed,
                                 onContinue = {
                                     val finished = huntVm.advance()
                                     if (finished) {
