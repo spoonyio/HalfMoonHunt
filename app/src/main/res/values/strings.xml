@@ -11,7 +11,7 @@
     <string name="end_game_button_caption">Woo hoo, all done! Press the button below to return to the Home Page.</string>
     <string name="start_game">Start Game</string>
     <string name="half_moon_hunt">half moon hunt</string>
-    <string name="loading_clue">Loading clue...</string>
+    <string name="loading_clue">Loading clue…</string>
     <string name="location_permission_not_granted">Location permission not granted.</string>
     <string name="hide_hint">🔍 Hide Hint</string>
     <string name="show_hint">🔍 Show Hint</string>
@@ -20,7 +20,7 @@
     <string name="distance_from_target_ft">You\'re off course by %1$f ft</string>
     <string name="location_error">Location error: %1$s</string>
     <string name="found_it">Found It!</string>
-    <string name="hmmm_this_isn_t_it">Hmmm... this isn\'t it</string>
+    <string name="hmmm_this_isn_t_it">Hmmm… this isn\'t it</string>
     <string name="ok">OK</string>
     <string name="try_again">Trust your inner compass and try again!</string>
     <string name="quit">Quit</string>
