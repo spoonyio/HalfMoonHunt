@@ -17,7 +17,7 @@
     <string name="show_hint">🔍 Show Hint</string>
     <string name="hint_colon">Hint: %1$s</string>
     <string name="location_unavailable">Location unavailable.</string>
-    <string name="distance_from_target_ft">You\'re off course by %1$s feet.</string>
+    <string name="distance_from_target_ft">You\'re off course by %1$f ft</string>
     <string name="location_error">Location error: %1$s</string>
     <string name="found_it">Found It!</string>
     <string name="hmmm_this_isn_t_it">Hmmm... this isn\'t it</string>
