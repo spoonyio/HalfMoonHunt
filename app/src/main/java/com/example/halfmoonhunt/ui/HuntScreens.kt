@@ -1,7 +1,6 @@
 package com.example.halfmoonhunt.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -174,7 +173,6 @@ fun StartScreen(
     }
 }
 
-@SuppressLint("MissingPermission")
 @Composable
 fun ClueScreen(
     huntVm: HuntViewModel,
@@ -242,6 +240,13 @@ fun ClueScreen(
                     if (!locationPermission(context)) { errorMsg =
                         context.getString(R.string.location_permission_not_granted); return@Button }
                     val cts = com.google.android.gms.tasks.CancellationTokenSource()
+                    if (ContextCompat.checkSelfPermission(
+                            context, Manifest.permission.ACCESS_FINE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        errorMsg = context.getString(R.string.location_permission_not_granted)
+                        return@Button
+                    }
                     fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
                         .addOnSuccessListener { loc ->
                             if (loc == null) { distanceMsg =
@@ -249,7 +254,7 @@ fun ClueScreen(
                             val feet = haversine(loc.latitude, loc.longitude, clue.lat, clue.lon)
                             distanceMsg = context.getString(
                                 R.string.distance_from_target_ft,
-                                "%.1f".format(feet)
+                                feet
                             )
                             if (feet <= clue.threshold) onSolved() else showIncorrect = true
                         }
